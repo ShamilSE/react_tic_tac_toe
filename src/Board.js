@@ -41,12 +41,6 @@ class Board extends React.Component {
         }
     }
 
-    renderSquare(i) {
-        return <Square
-            value={this.state.squares[i]}
-            onClick={() => this.handleClick(i)}
-        />;
-    }
 
     getStatus() {
         let status = 'Next player: ' + this.state.sign;
@@ -78,27 +72,27 @@ class Board extends React.Component {
         })
     }
 
-    // checkPrevMove() {
-    //     if (this.state.currentMove > 0) {
-    //         let index = this.state.currentMove
-    //         let prevState = this.state.history[index - 1]
-    //
-    //         this.setState({squares: prevState, currentMove: index - 1})
-    //         if (this.state.currentMove === this.state.newMove - 1) {
-    //             let history = this.state.history.push(this.state.squares)
-    //             this.setState({history})
-    //         }
-    //     }
-    // }
-    //
-    // checkNextMove() {
-    //     if (this.state.currentMove < this.state.newMove) {
-    //         let index = this.state.currentMove
-    //         let prevState = this.state.history[index + 1]
-    //
-    //         this.setState({squares: prevState, currentMove: index + 1})
-    //     }
-    // }
+    checkPrevMove() {
+        if (this.state.currentMove > 0) {
+            let currentMove = this.state.currentMove - 1
+            let squares = this.state.history[currentMove]
+
+            if (this.state.currentMove === this.state.nextMove) {
+                let history = this.state.history
+                history.push(this.state.squares)
+            }
+            this.setState({squares, currentMove})
+        }
+    }
+
+    checkNextMove() {
+        if (this.state.currentMove < this.state.newMove) {
+            let index = this.state.currentMove
+            let prevState = this.state.history[index + 1]
+
+            this.setState({squares: prevState, currentMove: index + 1})
+        }
+    }
 
     calculateWinner(squares) {
         const lines = [
@@ -120,12 +114,17 @@ class Board extends React.Component {
         return null;
     }
 
-    render() {
-        const status = this.getStatus()
+    renderSquare(i) {
+        return <Square
+            value={this.state.squares[i]}
+            onClick={() => this.handleClick(i)}
+        />;
+    }
 
+    render() {
         return (
             <div>
-                <div className="status">{status}</div>
+                <div className="status">{this.state.currentMove === this.state.newMove ? this.getStatus() : "history"}</div>
                 <div>{this.state.winner ? "winner is " + this.state.winner : null}</div>
                 <button onClick={() => this.newGame()}>new game</button>
 
@@ -145,8 +144,8 @@ class Board extends React.Component {
                     {this.renderSquare(8)}
                 </div>
 
-                {/*<button onClick={() => this.checkPrevMove()}>prev</button>*/}
-                {/*<button onClick={() => this.checkNextMove()}>next</button>*/}
+                <button onClick={() => this.checkPrevMove()}>prev</button>
+                <button onClick={() => this.checkNextMove()}>next</button>
             </div>
         );
     }

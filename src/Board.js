@@ -8,23 +8,37 @@ class Board extends React.Component {
             squares: Array(9).fill(null),
             sign: "X",
             winner: null,
+            history: [],
+            currentMove: 0,
+            newMove: 0,
+            isGameOver: false,
         }
     }
 
     handleClick(squareNo) {
-        let newSquares = this.state.squares.slice()
-        newSquares[squareNo] = this.state.sign
+        if (!this.state.squares[squareNo] && !this.state.isGameOver && this.state.currentMove === this.state.newMove) {
+            let newSquares = this.state.squares.slice()
 
-        if (this.state.sign === "X")
-            this.setState({sign: "O"})
-        else
-            this.setState({sign: "X"})
+            newSquares[squareNo] = this.state.sign
+            if (this.state.sign === "X")
+                this.setState({sign: "O"})
+            else
+                this.setState({sign: "X"})
 
-        this.setState({squares: newSquares})
+            let history = this.state.history
+            history.push(this.state.squares)
 
-        let winner = this.calculateWinner(this.state.squares)
-        if (winner)
-            this.setState({winner})
+            this.setState({
+                squares: newSquares,
+                history,
+                currentMove: this.state.currentMove + 1,
+                newMove: this.state.newMove + 1
+            })
+
+            let winner = this.calculateWinner(this.state.squares)
+            if (winner)
+                this.setState({winner, isGameOver: true})
+        }
     }
 
     renderSquare(i) {
@@ -53,8 +67,38 @@ class Board extends React.Component {
         let newSquares = this.state.squares.slice()
 
         newSquares.fill(null)
-        this.setState({squares: newSquares, sign: "X", winner: null})
+        this.setState({
+            squares: newSquares,
+            sign: "X",
+            winner: null,
+            isGameOver: false,
+            history: [],
+            currentMove: 0,
+            newMove: 0
+        })
     }
+
+    // checkPrevMove() {
+    //     if (this.state.currentMove > 0) {
+    //         let index = this.state.currentMove
+    //         let prevState = this.state.history[index - 1]
+    //
+    //         this.setState({squares: prevState, currentMove: index - 1})
+    //         if (this.state.currentMove === this.state.newMove - 1) {
+    //             let history = this.state.history.push(this.state.squares)
+    //             this.setState({history})
+    //         }
+    //     }
+    // }
+    //
+    // checkNextMove() {
+    //     if (this.state.currentMove < this.state.newMove) {
+    //         let index = this.state.currentMove
+    //         let prevState = this.state.history[index + 1]
+    //
+    //         this.setState({squares: prevState, currentMove: index + 1})
+    //     }
+    // }
 
     calculateWinner(squares) {
         const lines = [
@@ -84,6 +128,7 @@ class Board extends React.Component {
                 <div className="status">{status}</div>
                 <div>{this.state.winner ? "winner is " + this.state.winner : null}</div>
                 <button onClick={() => this.newGame()}>new game</button>
+
                 <div className="board-row">
                     {this.renderSquare(0)}
                     {this.renderSquare(1)}
@@ -99,6 +144,9 @@ class Board extends React.Component {
                     {this.renderSquare(7)}
                     {this.renderSquare(8)}
                 </div>
+
+                {/*<button onClick={() => this.checkPrevMove()}>prev</button>*/}
+                {/*<button onClick={() => this.checkNextMove()}>next</button>*/}
             </div>
         );
     }

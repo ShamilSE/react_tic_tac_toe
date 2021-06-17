@@ -8,14 +8,13 @@ class Board extends React.Component {
             squares: Array(9).fill(null),
             sign: "X",
             winner: null,
-            history: [],
             currentMove: 0,
             newMove: 0,
             isGameOver: false,
         }
     }
 
-    handleClick(squareNo) {
+    handleSquareClick(squareNo) {
         if (!this.state.squares[squareNo] && !this.state.isGameOver && this.state.currentMove === this.state.newMove) {
             let newSquares = this.state.squares.slice()
 
@@ -25,12 +24,9 @@ class Board extends React.Component {
             else
                 this.setState({sign: "X"})
 
-            let history = this.state.history
-            history.push(this.state.squares)
-
+            this.props.historyUpdate(this.state.squares)
             this.setState({
                 squares: newSquares,
-                history,
                 currentMove: this.state.currentMove + 1,
                 newMove: this.state.newMove + 1
             })
@@ -66,20 +62,19 @@ class Board extends React.Component {
             sign: "X",
             winner: null,
             isGameOver: false,
-            history: [],
             currentMove: 0,
             newMove: 0
         })
+        this.props.clearHistory()
     }
 
     checkPrevMove() {
         if (this.state.currentMove > 0) {
             let currentMove = this.state.currentMove - 1
-            let squares = this.state.history[currentMove]
+            let squares = this.props.getHistoryEl(currentMove)
 
-            if (this.state.currentMove === this.state.nextMove) {
-                let history = this.state.history
-                history.push(this.state.squares)
+            if (this.state.currentMove === this.state.newMove) {
+                this.props.historyUpdate(this.state.squares)
             }
             this.setState({squares, currentMove})
         }
@@ -88,7 +83,7 @@ class Board extends React.Component {
     checkNextMove() {
         if (this.state.currentMove < this.state.newMove) {
             let index = this.state.currentMove
-            let prevState = this.state.history[index + 1]
+            let prevState = this.props.getHistoryEl(index + 1)
 
             this.setState({squares: prevState, currentMove: index + 1})
         }
@@ -117,14 +112,16 @@ class Board extends React.Component {
     renderSquare(i) {
         return <Square
             value={this.state.squares[i]}
-            onClick={() => this.handleClick(i)}
+            onClick={() => this.handleSquareClick(i)}
         />;
     }
 
     render() {
         return (
             <div>
-                <div className="status">{this.state.currentMove === this.state.newMove ? this.getStatus() : "history"}</div>
+                <div className="status">
+                    {this.state.currentMove === this.state.newMove ? this.getStatus() : "history"}
+                </div>
                 <div>{this.state.winner ? "winner is " + this.state.winner : null}</div>
                 <button onClick={() => this.newGame()}>new game</button>
 

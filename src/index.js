@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-// import {Board} from './Board'
-import {Login} from './Login'
+import {Board} from './Board'
 
 class Game extends React.Component {
     constructor(props) {
@@ -29,12 +28,11 @@ class Game extends React.Component {
         return (
             <div className="game">
                 <div className="game-board">
-                    {/*<Board*/}
-                    {/*    historyUpdate={(i) => this.historyUpdate(i)}*/}
-                    {/*    clearHistory={() => this.clearHistory()}*/}
-                    {/*    getHistoryEl={(i) => this.getHistoryEl(i)}*/}
-                    {/*/>*/}
-                    <Login/>
+                    <Board
+                        historyUpdate={(i) => this.historyUpdate(i)}
+                        clearHistory={() => this.clearHistory()}
+                        getHistoryEl={(i) => this.getHistoryEl(i)}
+                    />
                 </div>
                 <div className="game-info">
                     <div>{/* status */}</div>
